@@ -13,7 +13,7 @@ function formatTimestamp(date: Date) {
   return `${min}:${sec}.${ms}`;
 }
 
-export type ConsoleHandlerConsole = Pick<Console, 'debug' | 'error' | 'info' | 'warn'>;
+export type ConsoleHandlerConsole = Pick<Console, 'debug' | 'error' | 'info' | 'warn' | 'table'>;
 
 export interface ConsoleHandlerOptions {
   level?: LogLevels;
@@ -21,7 +21,7 @@ export interface ConsoleHandlerOptions {
 }
 
 export class ConsoleHandler extends LogHandler {
-  readonly #console: Pick<Console, 'debug' | 'error' | 'info' | 'warn'>;
+  readonly #console: ConsoleHandlerConsole;
 
   constructor(level: LogLevels, opts?: ConsoleHandlerOptions) {
     super(level);
@@ -44,6 +44,7 @@ export class ConsoleHandler extends LogHandler {
       [LogLevels.Critical]: this.#console.error,
       [LogLevels.Alert]: this.#console.error,
       [LogLevels.Emergency]: this.#console.error,
+      [LogLevels.Table]: this.#console.table,
     };
 
     return CONSOLE_MAPPING[level];

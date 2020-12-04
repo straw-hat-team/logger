@@ -85,6 +85,15 @@ describe('Logger', () => {
     new Logger('app').addHandler(handler).emergency('Hello');
     expect(handler.handleEvent.mock.calls[0][0].level).toEqual(LogLevels.Emergency);
   });
+
+  test.skip('sends a table log level event', () => {
+    const handler = new NullableHandler(LogLevels.Table);
+    new Logger('app').addHandler(handler).table([
+      { name: 'Theo', id: 1 },
+      { name: 'Yorids', id: 2 },
+    ]);
+    expect(handler.handleEvent.mock.calls[0][0].level).toEqual(LogLevels.Table);
+  });
 });
 
 describe('LogHandler', () => {
@@ -105,14 +114,14 @@ describe('LogHandler', () => {
     expect(handler.handleEvent).not.toBeCalled();
   });
   test('using global logger level', () => {
-    (globalThis as any).STRAW_HAT_GLOBALS = {
+    (window as any).STRAW_HAT_GLOBALS = {
       logger: { level: 4 },
     };
     const handler = new NullableHandler(LogLevels.Critical);
     new Logger('app').addHandler(handler).warning('Hello');
     expect(handler.handleEvent).toBeCalled();
 
-    delete (globalThis as any).STRAW_HAT_GLOBALS;
+    delete (window as any).STRAW_HAT_GLOBALS;
   });
 });
 
@@ -123,6 +132,25 @@ describe('LogEvent', () => {
       level: LogLevels.Notset,
       logger: 'app',
       message: 'Hello',
+      metadata: {
+        hello: 'world',
+      },
+      time,
+    });
+
+    expect(JSON.stringify(event)).toBe(
+      '{"logger":"app","level":0,"levelName":"Notset","message":"Hello","metadata":{"hello":"world"},"time":743340600000}'
+    );
+  });
+});
+
+describe.skip('LogTable', () => {
+  test('serialize the event to JSON', () => {
+    const time = new Date('July 22, 1993 07:30:00');
+    const event = new LogEvent({
+      data: [],
+      level: LogLevels.Notset,
+      logger: 'app',
       metadata: {
         hello: 'world',
       },

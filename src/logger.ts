@@ -1,6 +1,6 @@
 import { LogLevels } from './levels';
 import { LogHandler } from './log-handler';
-import { LogEvent, Message, Metadata } from './log-event';
+import { LogEvent, Message, Metadata, TableData } from './log-event';
 
 export interface LoggerOptions {
   handlers?: LogHandler[];
@@ -89,6 +89,13 @@ export class Logger {
   }
 
   /**
+   * For tabular information of any kind
+   */
+  table(data: TableData, metadata?: Metadata) {
+    return this.logTable(LogLevels.Table, data, metadata);
+  }
+
+  /**
    * Sends a log event
    */
   log(level: LogLevels, message: Message, metadata: Metadata = {}) {
@@ -96,6 +103,22 @@ export class Logger {
       logger: this.#name,
       level,
       message,
+      time: new Date(),
+      metadata: Object.assign({}, this.#metadata, metadata),
+    });
+
+    this.#handlers.forEach((handler) => handler.maybeHandleEvent(event));
+    return this;
+  }
+
+  /**
+   * Sends a table log event
+   */
+  logTable(level: LogLevels.Table, data: TableData, metadata: Metadata = {}) {
+    const event = new LogEvent({
+      data,
+      logger: this.#name,
+      level,
       time: new Date(),
       metadata: Object.assign({}, this.#metadata, metadata),
     });

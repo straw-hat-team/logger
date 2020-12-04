@@ -43,6 +43,11 @@ export enum LogLevels {
    * When system is unusable, panics
    */
   Emergency,
+
+  /**
+   * For tabular information of any kind
+   */
+  Table,
 }
 
 export type LevelName = keyof typeof LogLevels;
@@ -57,6 +62,7 @@ const LEVEL_NAME_MAPPING: Record<LogLevels, LevelName> = {
   [LogLevels.Critical]: 'Critical',
   [LogLevels.Alert]: 'Alert',
   [LogLevels.Emergency]: 'Emergency',
+  [LogLevels.Table]: 'Table',
 };
 
 export function getLevelName(level: LogLevels): LevelName {
